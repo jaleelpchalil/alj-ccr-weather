@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Center Monitor | Saudi Cities Weather</title>
+  <meta name="description" content="Live data center environmental monitor and Saudi Arabia cities weather dashboard powered by Blynk IoT."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark:      #0a0e1a;
+      --bg-card:      #111827;
+      --bg-card2:     #1a2235;
+      --border:       rgba(255,255,255,0.07);
+      --accent-blue:  #3b82f6;
+      --accent-cyan:  #06b6d4;
+      --accent-green: #10b981;
+      --accent-red:   #ef4444;
+      --accent-amber: #f59e0b;
+      --text-primary: #f1f5f9;
+      --text-muted:   #64748b;
+      --text-dim:     #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(59,130,246,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 10%, rgba(6,182,212,0.08) 0%, transparent 50%);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,26,0.85);
+      backdrop-filter: blur(12px);
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width:40px; height:40px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius:10px; display:flex; align-items:center; justify-content:center;
+      font-size:20px;
+    }
+    .logo h1 { font-size:18px; font-weight:700; letter-spacing:-0.3px; }
+    .logo p  { font-size:11px; color:var(--text-muted); }
+
+    .header-right { display:flex; align-items:center; gap:16px; }
+    .status-badge {
+      display:flex; align-items:center; gap:6px;
+      font-size:12px; color:var(--text-dim);
+      background:var(--bg-card2); border:1px solid var(--border);
+      padding:6px 12px; border-radius:20px;
+    }
+    .pulse {
+      width:8px; height:8px; border-radius:50%;
+      background:var(--accent-green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100%{opacity:1;transform:scale(1);}
+      50%{opacity:.5;transform:scale(1.3);}
+    }
+    .last-update { font-size:11px; color:var(--text-muted); }
+    .refresh-btn {
+      background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));
+      border:none; color:#fff; font-size:12px; font-weight:600;
+      padding:8px 18px; border-radius:8px; cursor:pointer;
+      transition:opacity .2s, transform .15s;
+    }
+    .refresh-btn:hover{opacity:.85;transform:translateY(-1px);}
+    .refresh-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+    .notif-btn {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      color: var(--text-dim); font-size: 12px; font-weight: 600;
+      padding: 8px 14px; border-radius: 8px; cursor: pointer;
+      transition: all .2s;
+    }
+    .notif-btn:hover { border-color: var(--accent-amber); color: var(--accent-amber); }
+    .notif-btn.granted { border-color: var(--accent-green); color: var(--accent-green); }
+    .notif-btn.denied  { border-color: var(--accent-red);   color: var(--accent-red); opacity:.6; cursor:not-allowed; }
+
+    /* Alarm overlay banner */
+    #alarmBanner {
+      display: none;
+      position: fixed; top: 76px; left: 50%; transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(239,68,68,.97);
+      border: 1px solid #f87171;
+      border-radius: 14px;
+      padding: 14px 28px;
+      font-size: 14px; font-weight: 700; color: #fff;
+      box-shadow: 0 8px 40px rgba(239,68,68,.5);
+      animation: bannerPop .3s ease;
+      display: none;
+      align-items: center; gap: 12px;
+      white-space: nowrap;
+    }
+    @keyframes bannerPop {
+      from { opacity:0; transform: translateX(-50%) translateY(-10px); }
+      to   { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    #alarmBanner .close-banner {
+      background: rgba(255,255,255,.2); border: none; color: #fff;
+      width: 22px; height: 22px; border-radius: 50%;
+      cursor: pointer; font-size: 14px; line-height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      margin-left: 8px; flex-shrink: 0;
+    }
+
+    main { padding:32px 40px; max-width:1600px; margin:0 auto; }
+
+    .section-title {
+      font-size:11px; font-weight:600; letter-spacing:1.5px;
+      text-transform:uppercase; color:var(--text-muted);
+      margin-bottom:16px; margin-top:36px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    .it-room-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:20px;
+    }
+
+    .it-card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:20px; padding:28px;
+      position:relative; overflow:hidden;
+      transition:transform .2s, border-color .2s;
+      display:flex;
+      flex-direction:column;
+    }
+    .it-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.13);}
+    .it-card::before{
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+      border-radius:20px 20px 0 0;
+    }
+    .it-card.temp::before  { background:linear-gradient(90deg,#ef4444,#f97316); }
+    .it-card.humid::before { background:linear-gradient(90deg,#3b82f6,#06b6d4); }
+    .it-card.alarm::before { background:linear-gradient(90deg,#8b5cf6,#ec4899); }
+
+    .card-label {
+      font-size:11px; font-weight:600; letter-spacing:1px;
+      text-transform:uppercase; color:var(--text-muted); margin-bottom:16px;
+    }
+
+    /* ── GAUGE STYLES ── */
+    .gauge-wrap {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+    }
+    .gauge-svg {
+      width: 100%;
+      height: auto;
+      max-width: 260px;
+      overflow: visible;
+    }
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.06);
+      stroke-linecap: round;
+    }
+    .gauge-fg {
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.15));
+    }
+    .gauge-text {
+      position: absolute;
+      bottom: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    .gauge-text .gval  {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1;
+      background: linear-gradient(180deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gauge-text .gunit {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .gauge-ticks {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+    .gauge-tick-labels {
+      font-size: 10px;
+      fill: var(--text-muted);
+      font-weight: 500;
+      text-anchor: middle;
+    }
+
+    .card-sub {
+      font-size:12px;
+      color:var(--text-muted);
+      text-align: center;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    .alarm-normal {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(16,185,129,.15); border:1px solid rgba(16,185,129,.3);
+      color:var(--accent-green); padding:10px 18px; border-radius:12px;
+      font-size:14px; font-weight:600;
+    }
+    .alarm-active {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.3);
+      color:var(--accent-red); padding:10px 18px; border-radius:12px;
+      font-size:14px; font-weight:600;
+      animation:alarmBlink 1s ease-in-out infinite;
+    }
+    @keyframes alarmBlink{0%,100%{opacity:1;}50%{opacity:.6;}}
+
+    .cities-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+      gap:16px;
+    }
+
+    .city-card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:16px; padding:22px;
+      position:relative; overflow:hidden;
+      transition:transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .city-card:hover {
+      transform:translateY(-3px);
+      border-color:rgba(59,130,246,.35);
+      box-shadow:0 8px 30px rgba(59,130,246,.12);
+    }
+    .city-bg {
+      position:absolute; inset:0; opacity:.04;
+      font-size:80px; display:flex; align-items:center; justify-content:center;
+      pointer-events:none; user-select:none;
+    }
+    .city-name {
+      font-size:13px; font-weight:700; letter-spacing:.5px;
+      color:var(--text-dim); margin-bottom:16px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .city-name span { color:var(--text-primary); }
+    .city-temp {
+      font-size:44px; font-weight:800;
+      letter-spacing:-2px; line-height:1;
+      background:linear-gradient(135deg,#f97316,#ef4444);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .city-temp-unit {
+      font-size:16px; font-weight:500; color:var(--text-muted);
+      -webkit-text-fill-color:var(--text-muted);
+    }
+    .city-desc {
+      font-size:11px; color:var(--text-muted);
+      text-transform:capitalize; margin-top:6px; margin-bottom:14px;
+    }
+    .city-stats { display:flex; gap:10px; }
+    .stat {
+      flex:1; background:var(--bg-card2); border-radius:8px; padding:8px 10px;
+    }
+    .stat-label {
+      font-size:9px; font-weight:600; letter-spacing:1px;
+      text-transform:uppercase; color:var(--text-muted); margin-bottom:3px;
+    }
+    .stat-val       { font-size:15px; font-weight:700; }
+    .stat-val.humid { color:var(--accent-cyan); }
+    .stat-val.wind  { color:var(--accent-blue); }
+
+    .skeleton {
+      background:linear-gradient(90deg, var(--bg-card2) 25%, rgba(255,255,255,0.04) 50%, var(--bg-card2) 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.4s infinite;
+      border-radius:6px;
+    }
+    @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+    footer {
+      text-align:center; font-size:11px; color:var(--text-muted);
+      padding:32px; border-top:1px solid var(--border); margin-top:48px;
+    }
+
+    @media(max-width:900px){
+      header{padding:16px 20px;} main{padding:20px;}
+      .it-room-grid{grid-template-columns:1fr 1fr;}
+      .gauge-text .gval { font-size: 34px; }
+    }
+    @media(max-width:560px){
+      .it-room-grid{grid-template-columns:1fr;}
+      header{flex-wrap:wrap;gap:12px;}
+      .gauge-wrap { min-height: 180px; }
+      .gauge-text .gval { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🖥️</div>
+    <div>
+      <h1>Data Center Monitor</h1>
+      <p>Blynk IoT &middot; Saudi Arabia</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-badge">
+      <div class="pulse" id="liveIndicator"></div>
+      <span id="statusText">Live</span>
+    </div>
+    <span class="last-update" id="lastUpdate">—</span>
+    <button class="notif-btn" id="notifBtn" onclick="requestNotifPermission()" title="Enable desktop alarm notifications">😃 Enable Alerts</button>
+    <button class="refresh-btn" id="refreshBtn" onclick="fetchAll()">⟳ Refresh</button>
+  </div>
+</header>
+
+<!-- Alarm Banner -->
+<div id="alarmBanner">
+  <span>🚨</span>
+  <span id="alarmBannerMsg">IT Room Alert!</span>
+  <button class="close-banner" onclick="dismissBanner()">✕</button>
+</div>
+
+<main>
+
+  <div class="section-title">🏢 IT Room — Local Sensor (Blynk)</div>
+  <div class="it-room-grid">
+
+    <!-- Temperature -->
+    <div class="it-card temp">
+      <div class="card-label">🌡️ Temperature</div>
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid meet">
+          <path class="gauge-bg" d="M 30 140 A 90 90 0 0 1 210 140" stroke-width="14"/>
+          <path class="gauge-ticks" d="M 30 140 A 90 90 0 0 1 210 140" stroke-width="18" stroke-dasharray="2 12" style="opacity:0.3"/>
+          <path class="gauge-fg" id="tempGaugeFg"
+            d="M 30 140 A 90 90 0 0 1 210 140" stroke-width="14"
+            stroke="url(#tempGrad)"
+            stroke-dasharray="283" stroke-dashoffset="283"/>
+          <text x="30" y="155" class="gauge-tick-labels">0</text>
+          <text x="120" y="35" class="gauge-tick-labels">30</text>
+          <text x="210" y="155" class="gauge-tick-labels">60</text>
+          <defs>
+            <linearGradient id="tempGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#f59e0b"/>
+              <stop offset="50%" stop-color="#ef4444"/>
+              <stop offset="100%" stop-color="#dc2626"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="gauge-text">
+          <div class="gval" id="itTemp">
+            <div class="skeleton" style="width:80px;height:42px;margin:0 auto;"></div>
+          </div>
+          <div class="gunit" id="itTempUnit"></div>
+        </div>
+      </div>
+      <div class="card-sub" id="itTempSub">IT Room Temperature</div>
+    </div>
+
+    <!-- Humidity -->
+    <div class="it-card humid">
+      <div class="card-label">💧 Humidity</div>
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid meet">
+          <path class="gauge-bg" d="M 30 140 A 90 90 0 0 1 210 140" stroke-width="14"/>
+          <path class="gauge-ticks" d="M 30 140 A 90 90 0 0 1 210 140" stroke-width="18" stroke-dasharray="2 12" style="opacity:0.3"/>
+          <path class="gauge-fg" id="humidGaugeFg"
+            d="M 30 140 A 90 90 0 0 1 210 140" stroke-width="14"
+            stroke="url(#humidGrad)"
+            stroke-dasharray="283" stroke-dashoffset="283"/>
+          <text x="30" y="155" class="gauge-tick-labels">0%</text>
+          <text x="120" y="35" class="gauge-tick-labels">50%</text>
+          <text x="210" y="155" class="gauge-tick-labels">100%</text>
+          <defs>
+            <linearGradient id="humidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="50%" stop-color="#06b6d4"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="gauge-text">
+          <div class="gval" id="itHumid">
+            <div class="skeleton" style="width:80px;height:42px;margin:0 auto;"></div>
+          </div>
+          <div class="gunit" id="itHumidUnit"></div>
+        </div>
+      </div>
+      <div class="card-sub">Relative Humidity</div>
+    </div>
+
+    <!-- Alarm -->
+    <div class="it-card alarm">
+      <div class="card-label">🚨 Alarm Status</div>
+      <div style="height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+        <div id="alarmBadge">
+          <div class="skeleton" style="width:130px;height:40px;border-radius:12px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.6;">
+          Temp &gt; 23&deg;C or RH outside 40&ndash;60%<br>triggers relay alarm.
+        </div>
+      </div>
+      <div class="card-sub" style="text-align:center">ASHRAE Class A1 Thresholds</div>
+    </div>
+
+  </div>
+
+  <div class="section-title">🌍 Saudi Arabia — Live City Weather (OpenWeatherMap, 15 min refresh)</div>
+  <div class="cities-grid" id="citiesGrid"></div>
+
+</main>
+
+<footer>
+  IT Room via <strong>Blynk IoT</strong> &nbsp;|&nbsp; Cities via <strong>OpenWeatherMap</strong>
+  &nbsp;|&nbsp; Auto-refresh every <strong>15 minutes</strong>
+</footer>
+
+<script>
+  /* ═══════════════════════════════════════════════
+     CONFIGURATION
+     ═══════════════════════════════════════════════ */
+  const BLYNK_TOKEN = 'XMPyrZ_6o_K-3sU2v6C9Np0EDInZ-Lx5';
+  const BLYNK_BASE  = 'https://sgp1.blynk.cloud/external/api/get';
+
+  // 🔑 Get your free API key from: https://home.openweathermap.org/api_keys
+  const OWM_API_KEY = 'deeeedc0784e702aa6644fbba6a7d53f';
+  const OWM_BASE    = 'https://api.openweathermap.org/data/2.5/weather';
+
+  const CITIES = [
+    { name:'Jeddah',  flag:'🕋', query:'Jeddah,SA' },
+    { name:'Makkah',  flag:'🗻', query:'Mecca,SA' },
+    { name:'Madinah', flag:'🌙', query:'Medina,SA' },
+    { name:'Riyadh',  flag:'🏢', query:'Riyadh,SA' },
+    { name:'Dammam',  flag:'🏭', query:'Dammam,SA' },
+    { name:'Taif',    flag:'🌿', query:'Taif,SA' },
+    { name:'Al Baha', flag:'⛰️', query:'Al Bahah,SA' },
+  ];
+
+  const ARC_LENGTH = 283;
+
+  /* ═══════════════════════════════════════════════
+     BLYNK HELPERS (IT Room)
+     ═══════════════════════════════════════════════ */
+  async function fetchPin(pin) {
+    try {
+      const r = await fetch(`${BLYNK_BASE}?token=${BLYNK_TOKEN}&V${pin}`);
+      if (!r.ok) return null;
+      return (await r.text()).trim();
+    } catch { return null; }
+  }
+
+  function setArcGauge(id, value, max) {
+    const pct = Math.min(Math.max(value / max, 0), 1);
+    const offset = ARC_LENGTH - (pct * ARC_LENGTH);
+    const el = document.getElementById(id);
+    if (el) el.style.strokeDashoffset = offset;
+  }
+
+  async function fetchITRoom() {
+    const [rawT, rawH, rawA] = await Promise.all([
+      fetchPin(0), fetchPin(1), fetchPin(2)
+    ]);
+
+    const temp  = parseFloat(rawT);
+    const humid = parseFloat(rawH);
+    const alarm = parseInt(rawA);
+
+    // Temp
+    const tEl = document.getElementById('itTemp');
+    const tUnit = document.getElementById('itTempUnit');
+    const tSub  = document.getElementById('itTempSub');
+    if (!isNaN(temp)) {
+      tEl.textContent   = temp.toFixed(1);
+      tUnit.textContent = '°C';
+      setArcGauge('tempGaugeFg', temp, 60);
+      if (temp > 23) {
+        tSub.innerHTML   = '⚠️ Above threshold (23°C)';
+        tSub.style.color = '#ef4444';
+      } else {
+        tSub.innerHTML   = '✅ Within normal range';
+        tSub.style.color = '#10b981';
+      }
+    } else {
+      tEl.innerHTML = '<span style="font-size:14px;color:var(--text-muted)">No data</span>';
+    }
+
+    // Humid
+    const hEl   = document.getElementById('itHumid');
+    const hUnit = document.getElementById('itHumidUnit');
+    if (!isNaN(humid)) {
+      hEl.textContent   = humid.toFixed(0);
+      hUnit.textContent = '%';
+      setArcGauge('humidGaugeFg', humid, 100);
+    } else {
+      hEl.innerHTML = '<span style="font-size:14px;color:var(--text-muted)">No data</span>';
+    }
+
+    // Alarm badge
+    const badge = document.getElementById('alarmBadge');
+    if (rawA !== null) {
+      badge.innerHTML = alarm === 1
+        ? '<div class="alarm-active">🚨 ALARM ACTIVE</div>'
+        : '<div class="alarm-normal">✅ NORMAL</div>';
+    } else {
+      badge.innerHTML = '<span style="color:var(--text-muted);font-size:13px">No data</span>';
+    }
+
+    checkAlarms(temp, humid);
+  }
+
+  /* ═══════════════════════════════════════════════
+     OPENWEATHERMAP (Cities) — Direct Web API
+     ═══════════════════════════════════════════════ */
+  async function fetchOWM(city) {
+    if (OWM_API_KEY === 'YOUR_OWM_API_KEY_HERE') {
+      throw new Error('OpenWeatherMap API key not set');
+    }
+    const url = `${OWM_BASE}?q=${encodeURIComponent(city.query)}&units=metric&appid=${OWM_API_KEY}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  }
+
+  async function fetchCities() {
+    const grid = document.getElementById('citiesGrid');
+
+    // Build skeleton cards on first load
+    if (grid.childElementCount === 0) {
+      CITIES.forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'city-card';
+        d.id = 'city-' + c.name;
+        d.innerHTML = `
+          <div class="city-bg">${c.flag}</div>
+          <div class="city-name"><span>${c.flag} ${c.name}</span></div>
+          <div class="skeleton" style="width:100px;height:44px;border-radius:6px;"></div>
+          <div class="skeleton" style="width:90px;height:14px;border-radius:4px;margin:10px 0 14px;"></div>
+          <div class="city-stats">
+            <div class="stat">
+              <div class="stat-label">Humidity</div>
+              <div class="skeleton" style="height:16px;width:40px;margin-top:4px;border-radius:4px;"></div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Wind</div>
+              <div class="skeleton" style="height:16px;width:50px;margin-top:4px;border-radius:4px;"></div>
+            </div>
+          </div>`;
+        grid.appendChild(d);
+      });
+    }
+
+    // Fetch all cities in parallel
+    await Promise.all(CITIES.map(async city => {
+      const card = document.getElementById('city-' + city.name);
+      if (!card) return;
+
+      try {
+        const data = await fetchOWM(city);
+
+        const temp  = data.main?.temp;
+        const humid = data.main?.humidity;
+        const wind  = data.wind?.speed;
+        const desc  = data.weather?.[0]?.description || '—';
+
+        card.innerHTML = `
+          <div class="city-bg">${city.flag}</div>
+          <div class="city-name"><span>${city.flag} ${city.name}</span> <small>SA</small></div>
+          <div class="city-temp">
+            ${temp !== undefined ? temp.toFixed(1) : '—'}<span class="city-temp-unit">°C</span>
+          </div>
+          <div class="city-desc">${desc}</div>
+          <div class="city-stats">
+            <div class="stat">
+              <div class="stat-label">Humidity</div>
+              <div class="stat-val humid">${humid !== undefined ? humid + '%' : '—'}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Wind</div>
+              <div class="stat-val wind">${wind !== undefined ? (wind * 3.6).toFixed(1) + ' km/h' : '—'}</div>
+            </div>
+          </div>`;
+      } catch (err) {
+        console.warn(`Weather fetch failed for ${city.name}:`, err);
+        card.innerHTML = `
+          <div class="city-bg">${city.flag}</div>
+          <div class="city-name"><span>${city.flag} ${city.name}</span> <small>SA</small></div>
+          <div style="color:var(--accent-red);font-size:13px;font-weight:600;margin:12px 0;">⚠️ Unavailable</div>
+          <div class="city-desc" style="font-size:11px;">${err.message.includes('API key') ? 'Add your OWM API key' : 'Check connection'}</div>
+          <div class="city-stats">
+            <div class="stat"><div class="stat-label">Humidity</div><div class="stat-val humid">—</div></div>
+            <div class="stat"><div class="stat-label">Wind</div><div class="stat-val wind">—</div></div>
+          </div>`;
+      }
+    }));
+  }
+
+  /* ═══════════════════════════════════════════════
+     ALARM & NOTIFICATION SYSTEM
+     ═══════════════════════════════════════════════ */
+  let alarmCooldown = false;
+  const COOLDOWN_MS = 5 * 60 * 1000;
+
+  function requestNotifPermission() {
+    if (!('Notification' in window)) {
+      alert('Your browser does not support desktop notifications.');
+      return;
+    }
+    Notification.requestPermission().then(updateNotifBtn);
+  }
+
+  function updateNotifBtn() {
+    const btn  = document.getElementById('notifBtn');
+    const perm = Notification.permission;
+    if (perm === 'granted') {
+      btn.textContent = '✅ Alerts ON';
+      btn.className   = 'notif-btn granted';
+      btn.onclick     = null;
+    } else if (perm === 'denied') {
+      btn.textContent = '❌ Blocked';
+      btn.className   = 'notif-btn denied';
+      btn.onclick     = null;
+    } else {
+      btn.textContent = '😃 Enable Alerts';
+      btn.className   = 'notif-btn';
+    }
+  }
+
+  function playAlarmSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const times = [0, 0.35, 0.7, 1.05, 1.4];
+      times.forEach(t => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type      = 'square';
+        osc.frequency.setValueAtTime(880, ctx.currentTime + t);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime + t);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.28);
+        osc.start(ctx.currentTime + t);
+        osc.stop(ctx.currentTime + t + 0.28);
+      });
+    } catch(e) { console.warn('Audio error:', e); }
+  }
+
+  function showBanner(msg) {
+    const b = document.getElementById('alarmBanner');
+    document.getElementById('alarmBannerMsg').textContent = msg;
+    b.style.display = 'flex';
+  }
+  function dismissBanner() {
+    document.getElementById('alarmBanner').style.display = 'none';
+  }
+
+  function checkAlarms(temp, humid) {
+    const tempBad   = !isNaN(temp)  && temp  > 23;
+    const humidLow  = !isNaN(humid) && humid < 40;
+    const humidHigh = !isNaN(humid) && humid > 60;
+    const triggered = tempBad || humidLow || humidHigh;
+
+    if (!triggered) {
+      document.getElementById('alarmBanner').style.display = 'none';
+      return;
+    }
+
+    const msgs = [];
+    if (tempBad)   msgs.push('Temp ' + temp.toFixed(1) + '°C > 23°C');
+    if (humidLow)  msgs.push('Humidity ' + humid.toFixed(0) + '% < 40%');
+    if (humidHigh) msgs.push('Humidity ' + humid.toFixed(0) + '% > 60%');
+    const fullMsg = '🚨 IT Room: ' + msgs.join(' | ');
+
+    showBanner(fullMsg);
+    document.title = '⚠️ ALARM! ' + msgs[0];
+
+    if (alarmCooldown) return;
+    alarmCooldown = true;
+    setTimeout(() => { alarmCooldown = false; }, COOLDOWN_MS);
+
+    playAlarmSound();
+
+    if (Notification.permission === 'granted') {
+      const n = new Notification('🚨 Data Center ALARM!', {
+        body: msgs.join('\n'),
+        icon: 'https://cdn-icons-png.flaticon.com/512/2621/2621232.png',
+        requireInteraction: true,
+        tag: 'datacenter-alarm'
+      });
+      n.onclick = () => { window.focus(); n.close(); };
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     MAIN LOOP
+     ═══════════════════════════════════════════════ */
+  let fetching = false;
+  async function fetchAll() {
+    if (fetching) return;
+    fetching = true;
+
+    const btn  = document.getElementById('refreshBtn');
+    const led  = document.getElementById('liveIndicator');
+    const stat = document.getElementById('statusText');
+
+    btn.disabled         = true;
+    btn.textContent      = 'Loading…';
+    led.style.background = '#f59e0b';
+    stat.textContent     = 'Fetching…';
+
+    try {
+      await Promise.all([fetchITRoom(), fetchCities()]);
+      const now = new Date();
+      document.getElementById('lastUpdate').textContent =
+        'Updated ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      led.style.background = '#10b981';
+      stat.textContent     = 'Live';
+
+      if (document.title.startsWith('⚠')) {
+        const [rawT, rawH] = await Promise.all([fetchPin(0), fetchPin(1)]);
+        const t = parseFloat(rawT), h = parseFloat(rawH);
+        if (!(t > 23 || h < 40 || h > 60)) document.title = 'Data Center Monitor | Saudi Cities Weather';
+      }
+    } catch (e) {
+      console.error(e);
+      led.style.background = '#ef4444';
+      stat.textContent     = 'Error';
+    }
+
+    btn.disabled    = false;
+    btn.textContent = '⟳ Refresh';
+    fetching = false;
+  }
+
+  updateNotifBtn();
+  fetchAll();
+  setInterval(fetchAll, 15 * 60 * 1000);  // ← CHANGED: 15 minutes
+</script>
+</body>
+</html>
