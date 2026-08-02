@@ -9,11 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: rgba(16, 23, 38, 0.85);
-      --card-bg2: rgba(23, 33, 54, 0.9);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(59, 130, 246, 0.35);
+      --bg: #070a12;
+      --card-bg: rgba(10, 15, 28, 0.55);
+      --card-bg2: rgba(18, 25, 45, 0.65);
+      --border: rgba(255, 255, 255, 0.14);
+      --border-hover: rgba(59, 130, 246, 0.6);
       --blue: #3b82f6;
       --cyan: #06b6d4;
       --green: #10b981;
@@ -21,22 +21,45 @@
       --amber: #f59e0b;
       --orange: #ff6b6b;
       --txt: #f8fafc;
-      --muted: #64748b;
-      --dim: #94a3b8;
+      --muted: #94a3b8;
+      --dim: #cbd5e1;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
+      background-color: var(--bg);
       color: var(--txt);
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
       background-image:
-        radial-gradient(ellipse at 15% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 5%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 100%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+        linear-gradient(180deg, rgba(5, 10, 30, 0.35) 0%, rgba(5, 10, 30, 0.55) 100%),
+        url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
       padding-bottom: 40px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Colorful ambient background orbs */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(135, 206, 235, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(100, 149, 237, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(70, 130, 180, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+      animation: ambientShift 20s ease-in-out infinite alternate;
+    }
+    @keyframes ambientShift {
+      0% { opacity: 0.7; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.1); }
     }
 
     /* ── Header ── */
@@ -49,104 +72,129 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(9, 13, 22, 0.92);
-      backdrop-filter: blur(16px);
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(20px) saturate(1.2);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     }
     .logo { display: flex; align-items: center; gap: 12px; }
     .logo-icon {
-      width: 40px; height: 40px; border-radius: 12px;
+      width: 42px; height: 42px; border-radius: 14px;
       background: linear-gradient(135deg, var(--blue), var(--cyan));
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+      font-size: 22px; box-shadow: 0 4px 25px rgba(59, 130, 246, 0.4);
+      transition: transform 0.3s ease;
     }
-    .logo h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
-    .logo p { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+    .logo-icon:hover { transform: rotate(-10deg) scale(1.1); }
+    .logo h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; background: linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo p { font-size: 10px; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; font-weight: 600; }
 
-    .hdr-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .hdr-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
     .badge {
-      display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--dim);
+      display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--dim);
       background: var(--card-bg2); border: 1px solid var(--border);
-      padding: 5px 12px; border-radius: 20px;
+      padding: 6px 14px; border-radius: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(1.4); } }
-    .ts { font-size: 10px; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2.5s infinite; box-shadow: 0 0 10px var(--green); }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(1.5); } }
+    .ts { font-size: 11px; color: var(--muted); font-weight: 500; }
 
     .btn {
-      border: none; font-size: 11px; font-weight: 700; padding: 7px 16px; border-radius: 8px; cursor: pointer;
-      transition: all 0.2s;
+      border: none; font-size: 12px; font-weight: 700; padding: 8px 18px; border-radius: 10px; cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .btn-refresh {
       background: linear-gradient(135deg, var(--blue), var(--cyan)); color: #fff;
-      box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
     }
-    .btn-refresh:hover { opacity: 0.85; transform: translateY(-1px); }
-    .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-refresh:hover { opacity: 0.9; transform: translateY(-2px) scale(1.05); box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5); }
+    .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-notif { background: var(--card-bg2); border: 1px solid var(--border); color: var(--dim); }
-    .btn-notif:hover { border-color: var(--amber); color: var(--amber); }
-    .btn-notif.on { border-color: var(--green); color: var(--green); }
+    .btn-notif:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
+    .btn-notif.on { border-color: var(--green); color: var(--green); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
     .btn-notif.off { border-color: var(--red); color: var(--red); opacity: 0.6; cursor: not-allowed; }
 
     /* ── Main Container ── */
-    main { padding: 24px 36px; max-width: 1560px; margin: 0 auto; }
+    main { padding: 28px 36px; max-width: 1560px; margin: 0 auto; position: relative; z-index: 1; }
     .sec-title {
-      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--muted); margin: 28px 0 14px; display: flex; align-items: center; gap: 10px;
+      font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); margin: 32px 0 18px; display: flex; align-items: center; gap: 12px;
     }
-    .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .sec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+    .sec-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
 
     /* ── IT Room Gauge Section ── */
     .it-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 24px;
     }
     .it-card {
-      background: var(--card-bg);
+      background: linear-gradient(145deg, rgba(12, 18, 35, 0.7), rgba(8, 12, 22, 0.8));
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px 26px 18px;
+      border-radius: 24px;
+      padding: 28px 28px 22px;
       position: relative;
       overflow: hidden;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s, box-shadow 0.35s;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+    .it-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
     }
     .it-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+      transform: translateY(-6px) scale(1.03);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.12);
+      z-index: 10;
     }
 
     .card-title {
-      font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 12px;
+      font-size: 15px; font-weight: 800; color: var(--txt); margin-bottom: 14px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    /* 270-Degree Round Arc Gauge */
+    /* 3D 270-Degree Round Arc Gauge */
     .round-gauge-container {
       position: relative;
-      width: 200px;
-      height: 200px;
+      width: 210px;
+      height: 210px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
+      filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.5));
     }
     .round-gauge-container svg {
-      width: 200px;
-      height: 200px;
+      width: 210px;
+      height: 210px;
+      overflow: visible;
     }
     .gauge-track {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.1);
+      stroke: rgba(255, 255, 255, 0.08);
       stroke-linecap: round;
+      filter: drop-shadow(inset 0px 2px 4px rgba(0,0,0,0.8));
     }
     .gauge-fill {
       fill: none;
       stroke-linecap: round;
       transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease;
+      filter: drop-shadow(0px 0px 8px rgba(255,255,255,0.15));
+    }
+    .gauge-highlight {
+      fill: none;
+      stroke-linecap: round;
+      pointer-events: none;
+      opacity: 0.4;
     }
 
     .gauge-center-val {
@@ -156,88 +204,125 @@
       display: flex;
       align-items: baseline;
       justify-content: center;
-      gap: 2px;
+      gap: 3px;
+      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.6));
     }
     .g-main-val {
-      font-size: 42px; font-weight: 800; color: var(--txt); letter-spacing: -1px; line-height: 1;
+      font-size: 46px; font-weight: 900; color: var(--txt); letter-spacing: -1.5px; line-height: 1;
+      transition: color 0.4s ease;
     }
     .g-unit-val {
-      font-size: 18px; font-weight: 600; color: var(--dim);
+      font-size: 20px; font-weight: 700; color: var(--dim);
     }
 
     .g-end-labels {
-      width: 170px;
-      margin: -18px auto 8px;
+      width: 180px;
+      margin: -14px auto 10px;
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
       color: var(--muted);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
 
     .card-ftr {
-      font-size: 11px; color: var(--muted); text-align: center; font-weight: 500; margin-top: 4px;
+      font-size: 12px; color: var(--muted); text-align: center; font-weight: 600; margin-top: 6px;
+      letter-spacing: 0.3px;
     }
 
     /* Alarm Box */
     .alarm-content {
-      flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px 0;
+      flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 24px 0;
     }
     .alarm-ok {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25);
-      color: var(--green); padding: 12px 24px; border-radius: 14px;
-      font-size: 15px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--green); padding: 14px 28px; border-radius: 16px;
+      font-size: 16px; font-weight: 800;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+      text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
     }
     .alarm-bad {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25);
-      color: var(--red); padding: 12px 24px; border-radius: 14px;
-      font-size: 15px; font-weight: 700;
-      animation: blink 1s infinite;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: var(--red); padding: 14px 28px; border-radius: 16px;
+      font-size: 16px; font-weight: 800;
+      box-shadow: 0 4px 25px rgba(239, 68, 68, 0.25);
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+      animation: blink 1.2s infinite;
     }
-    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-    .alarm-info { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.6; }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+    .alarm-info { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.7; font-weight: 500; }
 
     /* ── Saudi Cities Grid ── */
     .city-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 22px;
     }
 
     .city-card {
-      background: var(--card-bg);
+      background: linear-gradient(145deg, rgba(14, 20, 38, 0.7), rgba(8, 12, 24, 0.85));
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px 20px 14px;
+      border-radius: 24px;
+      padding: 22px 24px 18px;
       position: relative;
       overflow: hidden;
-      backdrop-filter: blur(12px);
-      transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+      backdrop-filter: blur(16px);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s, box-shadow 0.4s;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+    .city-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    }
+    .city-card::after {
+      content: '';
+      position: absolute;
+      top: -50%; right: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, var(--card-glow, transparent) 0%, transparent 70%);
+      opacity: 0.15;
+      pointer-events: none;
+      transition: opacity 0.4s;
     }
     .city-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-10px) scale(1.08);
+      z-index: 30;
       border-color: var(--border-hover);
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.12);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.2);
     }
+    .city-card:hover::after { opacity: 0.25; }
     .city-card .c-bg {
-      position: absolute; right: 10px; top: 10px; font-size: 56px; opacity: 0.05;
+      position: absolute; right: 12px; top: 12px; font-size: 64px; opacity: 0.06;
       pointer-events: none; user-select: none;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      transition: transform 0.4s ease, opacity 0.4s;
     }
+    .city-card:hover .c-bg { transform: scale(1.2) rotate(5deg); opacity: 0.1; }
 
     .city-hdr {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
     }
     .city-title {
-      font-size: 14px; font-weight: 800; color: var(--txt); display: flex; align-items: center; gap: 6px;
+      font-size: 15px; font-weight: 800; color: var(--txt); display: flex; align-items: center; gap: 8px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
-    .city-title small { font-size: 10px; color: var(--muted); font-weight: 500; }
+    .city-title small { font-size: 11px; color: var(--muted); font-weight: 600; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px; }
     .city-cond {
-      font-size: 11px; color: var(--dim); display: flex; align-items: center; gap: 4px;
+      font-size: 12px; color: var(--dim); display: flex; align-items: center; gap: 6px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.03);
+      padding: 4px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     /* Dual Mini Round Gauge Container per City */
@@ -245,20 +330,28 @@
       display: flex;
       align-items: center;
       justify-content: space-around;
-      margin: 4px 0 8px;
+      margin: 8px 0 12px;
+      gap: 10px;
     }
 
     .mini-round-gauge {
       position: relative;
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: transform 0.3s ease;
+    }
+    .mini-round-gauge:hover {
+      transform: scale(1.15);
+      z-index: 5;
     }
     .mini-round-gauge svg {
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
+      overflow: visible;
+      filter: drop-shadow(0px 6px 10px rgba(0,0,0,0.5));
     }
     .mini-gv {
       position: absolute;
@@ -267,63 +360,78 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.6));
     }
     .mini-gv-val {
-      font-size: 18px; font-weight: 800; line-height: 1; letter-spacing: -0.5px;
+      font-size: 20px; font-weight: 900; line-height: 1; letter-spacing: -0.5px;
+      transition: color 0.3s ease;
     }
     .mini-gv-lbl {
-      font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-top: 3px;
+      font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 4px;
+      letter-spacing: 0.8px;
     }
 
     .city-ftr {
       display: flex; align-items: center; justify-content: space-between;
-      border-top: 1px solid var(--border); padding-top: 10px; font-size: 11px; color: var(--muted);
+      border-top: 1px solid var(--border); padding-top: 12px; font-size: 12px; color: var(--muted);
+      font-weight: 600;
     }
     .wind-badge {
-      display: flex; align-items: center; gap: 4px; color: var(--blue); font-weight: 700;
+      display: flex; align-items: center; gap: 6px; color: var(--blue); font-weight: 800;
+      background: rgba(59, 130, 246, 0.08);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, 0.15);
     }
 
     /* Skeletons */
     .sk {
-      background: linear-gradient(90deg, var(--card-bg2) 25%, rgba(255, 255, 255, 0.04) 50%, var(--card-bg2) 75%);
-      background-size: 200% 100%; animation: shim 1.3s infinite; border-radius: 6px;
+      background: linear-gradient(90deg, var(--card-bg2) 25%, rgba(255, 255, 255, 0.06) 50%, var(--card-bg2) 75%);
+      background-size: 200% 100%; animation: shim 1.3s infinite; border-radius: 8px;
     }
     @keyframes shim { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     /* Alarm Banner */
     #alarmBanner {
-      display: none; position: fixed; top: 68px; left: 50%; transform: translateX(-50%); z-index: 9999;
-      background: rgba(239, 68, 68, 0.96); border: 1px solid #f87171; border-radius: 14px;
-      padding: 12px 24px; font-size: 13px; font-weight: 700; color: #fff;
-      box-shadow: 0 8px 40px rgba(239, 68, 68, 0.5);
-      align-items: center; gap: 10px; white-space: nowrap; animation: bpop 0.3s ease;
+      display: none; position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 9999;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.98), rgba(220, 38, 38, 0.98));
+      border: 1px solid #f87171; border-radius: 16px;
+      padding: 14px 28px; font-size: 14px; font-weight: 800; color: #fff;
+      box-shadow: 0 10px 50px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3);
+      align-items: center; gap: 12px; white-space: nowrap; animation: bpop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
-    @keyframes bpop { from { opacity:0; transform: translateX(-50%) translateY(-10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+    @keyframes bpop { from { opacity:0; transform: translateX(-50%) translateY(-15px) scale(0.9); } to { opacity:1; transform: translateX(-50%) translateY(0) scale(1); } }
     #alarmBanner .xb {
-      background: rgba(255, 255, 255, 0.2); border: none; color: #fff; width: 20px; height: 20px;
-      border-radius: 50%; cursor: pointer; font-size: 12px; display: flex; align-items: center;
-      justify-content: center; margin-left: 6px; flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.2); border: none; color: #fff; width: 24px; height: 24px;
+      border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center;
+      justify-content: center; margin-left: 8px; flex-shrink: 0; font-weight: 700;
+      transition: all 0.2s;
     }
+    #alarmBanner .xb:hover { background: rgba(255,255,255,0.35); transform: scale(1.1); }
 
     footer {
-      text-align: center; font-size: 10px; color: var(--muted);
-      padding: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+      text-align: center; font-size: 11px; color: var(--muted);
+      padding: 28px; border-top: 1px solid var(--border); margin-top: 48px;
+      font-weight: 500; letter-spacing: 0.5px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
     }
 
     @media (max-width: 960px) {
       header { padding: 14px 20px; }
       main { padding: 20px; }
       .it-grid { grid-template-columns: 1fr; }
-      .city-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+      .city-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
     }
   </style>
+<base target="_blank">
 </head>
 <body>
 
 <header>
   <div class="logo">
     <div class="logo-icon">🖥️</div>
-    <div><h1>ALJ Data Center Monitor</h1><p>Blynk IoT &middot; OpenWeatherMap</p></div>
+    <div><h1>CCR Weather Monitor</h1><p>PCJ TECH &middot; OpenWeatherMap</p></div>
   </div>
   <div class="hdr-right">
     <div class="badge"><div class="dot" id="led"></div><span id="statusTxt">Live</span></div>
@@ -346,55 +454,81 @@
 
     <!-- IT TEMP GAUGE -->
     <div class="it-card">
-      <div class="card-title">IT Room Temp</div>
+      <div class="card-title">CCR Server Room Temp</div>
 
-      <!-- 270-degree round SVG arc gauge -->
       <div class="round-gauge-container">
         <svg viewBox="0 0 200 200">
-          <circle class="gauge-track" cx="100" cy="100" r="70" stroke-width="14"
-            stroke-dasharray="329.87 109.96" transform="rotate(135 100 100)"/>
-          <circle class="gauge-fill" id="itTFill" cx="100" cy="100" r="70" stroke-width="14"
-            stroke="#10b981"
-            stroke-dasharray="0 440"
-            transform="rotate(135 100 100)"/>
+          <defs>
+            <linearGradient id="itTempGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#34d399;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="itTempGradHot" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#f87171;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+            </linearGradient>
+            <filter id="itGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+          <circle class="gauge-track" cx="100" cy="100" r="75" stroke-width="20"
+            stroke-dasharray="353.43 117.81" transform="rotate(135 100 100)"/>
+          <circle class="gauge-fill" id="itTFill" cx="100" cy="100" r="75" stroke-width="20"
+            stroke="url(#itTempGrad)"
+            stroke-dasharray="0 471"
+            transform="rotate(135 100 100)"
+            style="filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.4));"/>
+          <circle class="gauge-highlight" cx="100" cy="100" r="75" stroke-width="4"
+            stroke="rgba(255,255,255,0.25)"
+            stroke-dasharray="353.43 117.81" transform="rotate(135 100 100)"/>
         </svg>
         <div class="gauge-center-val">
-          <span class="g-main-val" id="itTVal"><div class="sk" style="width:65px;height:40px;"></div></span>
+          <span class="g-main-val" id="itTVal"><div class="sk" style="width:70px;height:70px;"></div></span>
           <span class="g-unit-val" id="itTUnit"></span>
         </div>
       </div>
 
       <div class="g-end-labels">
-        <span>0</span>
-        <span>60</span>
+        <span>0°C</span>
+        <span>60°C</span>
       </div>
 
-      <div class="card-ftr" id="itTSub">IT Room Temperature</div>
+      <div class="card-ftr" id="itTSub">CCR Server Room Temperature</div>
     </div>
 
     <!-- IT HUMID GAUGE -->
     <div class="it-card">
       <div class="card-title">IT Room Humidity</div>
 
-      <!-- 270-degree round SVG arc gauge -->
       <div class="round-gauge-container">
         <svg viewBox="0 0 200 200">
-          <circle class="gauge-track" cx="100" cy="100" r="70" stroke-width="14"
-            stroke-dasharray="329.87 109.96" transform="rotate(135 100 100)"/>
-          <circle class="gauge-fill" id="itHFill" cx="100" cy="100" r="70" stroke-width="14"
-            stroke="#06b6d4"
-            stroke-dasharray="0 440"
-            transform="rotate(135 100 100)"/>
+          <defs>
+            <linearGradient id="itHumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle class="gauge-track" cx="100" cy="100" r="75" stroke-width="20"
+            stroke-dasharray="353.43 117.81" transform="rotate(135 100 100)"/>
+          <circle class="gauge-fill" id="itHFill" cx="100" cy="100" r="75" stroke-width="20"
+            stroke="url(#itHumGrad)"
+            stroke-dasharray="0 471"
+            transform="rotate(135 100 100)"
+            style="filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.4));"/>
+          <circle class="gauge-highlight" cx="100" cy="100" r="75" stroke-width="4"
+            stroke="rgba(255,255,255,0.25)"
+            stroke-dasharray="353.43 117.81" transform="rotate(135 100 100)"/>
         </svg>
         <div class="gauge-center-val">
-          <span class="g-main-val" id="itHVal"><div class="sk" style="width:65px;height:40px;"></div></span>
+          <span class="g-main-val" id="itHVal"><div class="sk" style="width:70px;height:45px;"></div></span>
           <span class="g-unit-val" id="itHUnit"></span>
         </div>
       </div>
 
       <div class="g-end-labels">
-        <span>0</span>
-        <span>100</span>
+        <span>0%</span>
+        <span>100%</span>
       </div>
 
       <div class="card-ftr">Relative Humidity</div>
@@ -404,7 +538,7 @@
     <div class="it-card">
       <div class="card-title">Alarm Status</div>
       <div class="alarm-content">
-        <div id="aBadge"><div class="sk" style="width:130px;height:40px;border-radius:12px;"></div></div>
+        <div id="aBadge"><div class="sk" style="width:140px;height:45px;border-radius:14px;"></div></div>
         <div class="alarm-info">Temp &gt; 23°C or RH outside 40–60%<br>triggers relay alarm.</div>
       </div>
       <div class="card-ftr">ASHRAE Class A1 Limits</div>
@@ -446,6 +580,43 @@
     '11d':'⛈️','11n':'⛈️','13d':'🌨️','13n':'🌨️','50d':'🌫️','50n':'🌫️',
   };
 
+  // ══════ TEMPERATURE COLOR THEME ══════
+  function getTempTheme(temp) {
+    if (temp <= 25) {
+      return {
+        grad: ['#4ade80', '#16a34a'],
+        solid: '#10b981',
+        glow: 'rgba(74, 222, 128, 0.5)',
+        cardGlow: 'rgba(16, 185, 129, 0.08)',
+        label: 'Cool'
+      };
+    } else if (temp <= 30) {
+      return {
+        grad: ['#d9f99d', '#84cc16'],
+        solid: '#a3e635',
+        glow: 'rgba(163, 230, 53, 0.5)',
+        cardGlow: 'rgba(132, 204, 22, 0.08)',
+        label: 'Warm'
+      };
+    } else if (temp <= 35) {
+      return {
+        grad: ['#fdba74', '#ea580c'],
+        solid: '#fb923c',
+        glow: 'rgba(251, 146, 60, 0.5)',
+        cardGlow: 'rgba(234, 88, 12, 0.08)',
+        label: 'Hot'
+      };
+    } else {
+      return {
+        grad: ['#f87171', '#dc2626'],
+        solid: '#ef4444',
+        glow: 'rgba(248, 113, 113, 0.6)',
+        cardGlow: 'rgba(220, 38, 38, 0.12)',
+        label: 'Extreme'
+      };
+    }
+  }
+
   // ══════ BLYNK FETCH ══════
   async function bPin(pin) {
     try {
@@ -456,29 +627,25 @@
   }
 
   // ══════ DYNAMIC ARC GAUGE FILL CALCULATION ══════
-  // For Big Gauge R=70 -> Total Arc Length = 329.87
-  function setBigRoundGauge(id, val, max, isTemp = false) {
-    const totalLen = 329.87;
+  // For Big Gauge R=75 -> Total Arc Length = 353.43
+  function setBigRoundGauge(id, val, max) {
+    const totalLen = 353.43;
     const pct = Math.min(Math.max(val / max, 0), 1);
     const filledLen = (pct * totalLen).toFixed(2);
     const el = document.getElementById(id);
     if (el) {
-      el.style.strokeDasharray = `${filledLen} 440`;
-      if (isTemp) {
-        // Dynamic color highlight: Red if above 23°C, Green if safe
-        el.style.stroke = val > 23 ? '#ff4757' : '#10b981';
-      }
+      el.style.strokeDasharray = `${filledLen} 471`;
     }
   }
 
-  // For Mini Gauge R=38 -> Total Arc Length = 179.07
+  // For Mini Gauge R=42 -> Total Arc Length = 197.92
   function setMiniRoundGauge(id, val, max) {
-    const totalLen = 179.07;
+    const totalLen = 197.92;
     const pct = Math.min(Math.max(val / max, 0), 1);
     const filledLen = (pct * totalLen).toFixed(2);
     const el = document.getElementById(id);
     if (el) {
-      el.style.strokeDasharray = `${filledLen} 240`;
+      el.style.strokeDasharray = `${filledLen} 264`;
     }
   }
 
@@ -491,16 +658,19 @@
     const tVal = document.getElementById('itTVal');
     const tU   = document.getElementById('itTUnit');
     const tSub = document.getElementById('itTSub');
+    const tFill = document.getElementById('itTFill');
     if (!isNaN(temp)) {
       tVal.textContent = temp.toFixed(1);
       tU.textContent   = '°C';
-      setBigRoundGauge('itTFill', temp, 60, true);
+      setBigRoundGauge('itTFill', temp, 60);
       if (temp > 23) {
         tVal.style.color = '#ff4757';
         tSub.innerHTML = '⚠️ Above threshold (23°C)'; tSub.style.color = '#ff4757';
+        if (tFill) { tFill.setAttribute('stroke', 'url(#itTempGradHot)'); tFill.style.filter = 'drop-shadow(0 0 12px rgba(248, 113, 113, 0.5))'; }
       } else {
         tVal.style.color = '#10b981';
         tSub.innerHTML = '✅ Within normal range'; tSub.style.color = '#10b981';
+        if (tFill) { tFill.setAttribute('stroke', 'url(#itTempGrad)'); tFill.style.filter = 'drop-shadow(0 0 10px rgba(52, 211, 153, 0.4))'; }
       }
     } else { tVal.innerHTML = '<span style="font-size:14px;color:var(--muted)">No data</span>'; }
 
@@ -510,7 +680,7 @@
     if (!isNaN(humid)) {
       hVal.textContent = humid.toFixed(0);
       hU.textContent   = '%';
-      setBigRoundGauge('itHFill', humid, 100, false);
+      setBigRoundGauge('itHFill', humid, 100);
     } else { hVal.innerHTML = '<span style="font-size:14px;color:var(--muted)">No data</span>'; }
 
     // Alarm Badge
@@ -524,11 +694,10 @@
     checkAlarms(temp, humid);
   }
 
-  // ══════ CITIES FETCH (270° DYNAMIC GAUGES FOR ALL CITIES) ══════
+  // ══════ CITIES FETCH (3D GRADIENT GAUGES WITH TEMP COLORS) ══════
   async function fetchCities() {
     const grid = document.getElementById('cGrid');
 
-    // Skeletons on first load
     if (grid.childElementCount === 0) {
       CITIES.forEach(c => {
         const d = document.createElement('div');
@@ -537,15 +706,15 @@
           <div class="c-bg">${c.icon}</div>
           <div class="city-hdr">
             <div class="city-title"><span>${c.icon} ${c.name}</span><small>SA</small></div>
-            <div class="sk" style="width:50px;height:14px;"></div>
+            <div class="sk" style="width:55px;height:16px;border-radius:8px;"></div>
           </div>
           <div class="dual-gauge-box">
             <div class="sk" style="width:90px;height:90px;border-radius:50%;"></div>
             <div class="sk" style="width:90px;height:90px;border-radius:50%;"></div>
           </div>
           <div class="city-ftr">
-            <div class="sk" style="width:70px;height:12px;"></div>
-            <div class="sk" style="width:50px;height:12px;"></div>
+            <div class="sk" style="width:90px;height:16px;border-radius:6px;"></div>
+            <div class="sk" style="width:60px;height:14px;border-radius:6px;"></div>
           </div>`;
         grid.appendChild(d);
       });
@@ -562,9 +731,13 @@
         const wind  = (d.wind.speed * 3.6).toFixed(1);
         const desc  = d.weather[0].description;
         const ico   = WEATHER_ICONS[d.weather[0].icon] || '🌤️';
+        const theme = getTempTheme(temp);
 
         const card = document.getElementById('cc-' + city.id);
         if (!card) return;
+
+        // Apply dynamic card glow based on temperature
+        card.style.setProperty('--card-glow', theme.cardGlow);
 
         card.innerHTML = `
           <div class="c-bg">${city.icon}</div>
@@ -573,21 +746,33 @@
             <div class="city-cond">${ico} <span style="text-transform:capitalize;">${desc}</span></div>
           </div>
 
-          <!-- Dual 270-degree Dynamic Mini Round Gauges -->
           <div class="dual-gauge-box">
 
             <!-- Mini Temp Gauge -->
             <div class="mini-round-gauge">
               <svg viewBox="0 0 100 100">
-                <circle class="gauge-track" cx="50" cy="50" r="38" stroke-width="8"
-                  stroke-dasharray="179.07 59.69" transform="rotate(135 50 50)"/>
-                <circle class="gauge-fill" id="ctFill-${city.id}" cx="50" cy="50" r="38" stroke-width="8"
-                  stroke="#ff6b6b"
-                  stroke-dasharray="0 240"
-                  transform="rotate(135 50 50)"/>
+                <defs>
+                  <linearGradient id="tempGrad-${city.id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="${theme.grad[0]}"/>
+                    <stop offset="100%" stop-color="${theme.grad[1]}"/>
+                  </linearGradient>
+                  <filter id="tempShadow-${city.id}" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="${theme.solid}" flood-opacity="0.4"/>
+                  </filter>
+                </defs>
+                <circle class="gauge-track" cx="50" cy="50" r="42" stroke-width="12"
+                  stroke-dasharray="197.92 65.97" transform="rotate(135 50 50)"/>
+                <circle class="gauge-fill" id="ctFill-${city.id}" cx="50" cy="50" r="42" stroke-width="12"
+                  stroke="url(#tempGrad-${city.id})"
+                  stroke-dasharray="0 264"
+                  transform="rotate(135 50 50)"
+                  style="filter: drop-shadow(0 0 8px ${theme.glow});"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" 
+                  stroke-width="2" stroke-dasharray="197.92 65.97" transform="rotate(135 50 50)"
+                  style="pointer-events: none;"/>
               </svg>
               <div class="mini-gv">
-                <div class="mini-gv-val" style="color:#ff6b6b;">${temp.toFixed(1)}<span style="font-size:10px;">°C</span></div>
+                <div class="mini-gv-val" style="color:${theme.solid};">${temp.toFixed(1)}<span style="font-size:11px;font-weight:700;">°C</span></div>
                 <div class="mini-gv-lbl">Temp</div>
               </div>
             </div>
@@ -595,15 +780,25 @@
             <!-- Mini Humid Gauge -->
             <div class="mini-round-gauge">
               <svg viewBox="0 0 100 100">
-                <circle class="gauge-track" cx="50" cy="50" r="38" stroke-width="8"
-                  stroke-dasharray="179.07 59.69" transform="rotate(135 50 50)"/>
-                <circle class="gauge-fill" id="chFill-${city.id}" cx="50" cy="50" r="38" stroke-width="8"
-                  stroke="#06b6d4"
-                  stroke-dasharray="0 240"
-                  transform="rotate(135 50 50)"/>
+                <defs>
+                  <linearGradient id="humGrad-${city.id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#67e8f9"/>
+                    <stop offset="100%" stop-color="#0e7490"/>
+                  </linearGradient>
+                </defs>
+                <circle class="gauge-track" cx="50" cy="50" r="42" stroke-width="12"
+                  stroke-dasharray="197.92 65.97" transform="rotate(135 50 50)"/>
+                <circle class="gauge-fill" id="chFill-${city.id}" cx="50" cy="50" r="42" stroke-width="12"
+                  stroke="url(#humGrad-${city.id})"
+                  stroke-dasharray="0 264"
+                  transform="rotate(135 50 50)"
+                  style="filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.4));"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.2)" 
+                  stroke-width="2" stroke-dasharray="197.92 65.97" transform="rotate(135 50 50)"
+                  style="pointer-events: none;"/>
               </svg>
               <div class="mini-gv">
-                <div class="mini-gv-val" style="color:#06b6d4;">${humid.toFixed(0)}<span style="font-size:10px;">%</span></div>
+                <div class="mini-gv-val" style="color:#22d3ee;">${humid.toFixed(0)}<span style="font-size:11px;font-weight:700;">%</span></div>
                 <div class="mini-gv-lbl">Humidity</div>
               </div>
             </div>
@@ -615,18 +810,17 @@
             <div class="wind-badge">💨 ${wind} <small>km/h</small></div>
           </div>`;
 
-        // Trigger mini gauge animation to exact value length
         setTimeout(() => {
           setMiniRoundGauge(`ctFill-${city.id}`, temp, 60);
           setMiniRoundGauge(`chFill-${city.id}`, humid, 100);
-        }, 50);
+        }, 60);
 
       } catch (e) {
         const card = document.getElementById('cc-' + city.id);
         if (card) {
           card.innerHTML = `
             <div class="city-hdr"><div class="city-title"><span>${city.icon} ${city.name}</span></div></div>
-            <div style="padding:20px 0;text-align:center;color:var(--muted);font-size:12px;">⚠️ Unable to fetch weather</div>`;
+            <div style="padding:24px 0;text-align:center;color:var(--muted);font-size:13px;font-weight:600;">⚠️ Unable to fetch weather</div>`;
         }
       }
     }));
